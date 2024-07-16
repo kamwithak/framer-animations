@@ -1,9 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import useAnimation from './hooks/useAnimation';
-import './App.css';
+import React from "react";
+import { motion } from "framer-motion";
+import useAnimation from "./hooks/useAnimation";
+import "./App.css";
 
-const segments = ['🍒', '🍋', '🍊', '🍉', '🍇', '🍍', '🍓', '🍌'];
+const segments = ["🍒", "🍋", "🍊", "🍉", "🍇", "🍍", "🍓", "🍌"];
 
 const App: React.FC = () => {
   const [animationState, spin] = useAnimation(segments);
@@ -14,7 +14,7 @@ const App: React.FC = () => {
         <motion.div
           className="wheel"
           animate={{ rotate: animationState.angle }}
-          transition={{ duration: 7, ease: 'easeOut' }}
+          transition={{ duration: 7, ease: "easeOut" }}
         >
           {segments.map((segment, index) => (
             <div
@@ -33,10 +33,12 @@ const App: React.FC = () => {
       <br />
       <br />
       <button onClick={spin} disabled={animationState.spinning}>
-        {animationState.spinning ? 'Spinning...' : 'Spin'}
+        {animationState.spinning ? "Spinning..." : "Spin"}
       </button>
       <br />
-      {animationState.result && <div className="result">Result: {animationState.result}</div>}
+      {animationState.result && (
+        <div className="result">Result: {animationState.result}</div>
+      )}
     </div>
   );
 };
