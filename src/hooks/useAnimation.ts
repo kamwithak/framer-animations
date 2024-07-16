@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface AnimationState {
   spinning: boolean;
@@ -9,12 +9,14 @@ interface AnimationState {
 const useAnimation = (
   segments: string[],
   duration: number = 7000,
-): [AnimationState, () => void] => {
+): [AnimationState, () => void, () => void, () => void] => {
   const [state, setState] = useState<AnimationState>({
     spinning: false,
     angle: 0,
     result: null,
   });
+
+  const spinInterval = useRef<NodeJS.Timeout | null>(null);
 
   const spin = () => {
     setState((prevState) => ({
@@ -22,7 +24,7 @@ const useAnimation = (
       spinning: true,
     }));
 
-    const newAngle = state.angle + Math.floor(Math.random() * 360) + 360 * 7; // Spin at least 5 full rotations from current angle
+    const newAngle = state.angle + Math.floor(Math.random() * 360) + 360 * 7; // Spin at least 7 full rotations from current angle
     setState((prevState) => ({
       ...prevState,
       angle: newAngle,
@@ -47,7 +49,35 @@ const useAnimation = (
     }, duration);
   };
 
-  return [state, spin];
+  const startIndefiniteSpin = () => {
+    if (spinInterval.current) {
+      clearInterval(spinInterval.current);
+    }
+    setState((prevState) => ({
+      ...prevState,
+      spinning: true,
+    }));
+    spinInterval.current = setInterval(() => {
+			const newAngle = state.angle + Math.floor(Math.random() * 360) + 360 * 7;
+      setState((prevState) => ({
+        ...prevState,
+        angle: newAngle,
+      }));
+    }, duration);
+  };
+
+  const stopIndefiniteSpin = () => {
+    if (spinInterval.current) {
+      clearInterval(spinInterval.current);
+      spinInterval.current = null;
+    }
+    setState((prevState) => ({
+      ...prevState,
+      spinning: false,
+    }));
+  };
+
+  return [state, spin, startIndefiniteSpin, stopIndefiniteSpin];
 };
 
 export default useAnimation;
