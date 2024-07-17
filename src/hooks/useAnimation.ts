@@ -3,14 +3,14 @@ import { useState, useRef, useEffect } from "react";
 interface AnimationState {
   spinning: boolean;
   angle: number;
-  result: string | null;  // NULL means no result yet
+  result: string | null; // NULL means no result yet
 }
 
 interface UseAnimation {
-  state: AnimationState;  // Current state of the animation
+  state: AnimationState; // Current state of the animation
   resultSpin: () => void; // Spin the wheel to show the result
-  startIndefiniteSpin: () => void;  // Start spinning indefinitely
-  stopIndefiniteSpin: () => void;   // Stop spinning indefinitely
+  startIndefiniteSpin: () => void; // Start spinning indefinitely
+  stopIndefiniteSpin: () => void; // Stop spinning indefinitely
 }
 
 const useAnimation = (
@@ -26,15 +26,13 @@ const useAnimation = (
   const timeoutRef = useRef<number | null>(null);
 
   const resultSpin = () => {
+    console.log("Start the result spin");
     setState((prevState) => ({
       ...prevState,
       spinning: true,
     }));
 
-    const newAngle =
-      state.angle +
-      Math.floor(Math.random() * 360) +
-      360 * 4; // Spin at least 4 full rotations from current angle
+    const newAngle = state.angle + Math.floor(Math.random() * 360) + 360 * 4; // Spin at least 4 full rotations from current angle
 
     setState((prevState) => ({
       ...prevState,
@@ -47,7 +45,7 @@ const useAnimation = (
       const segmentAngle = 360 / segments.length;
       // Calculate the segment index based on the angle difference from the pointer
       let index = Math.floor(
-        ((360 - (finalAngle - pointerAngle)) % 360) / segmentAngle
+        ((360 - (finalAngle - pointerAngle)) % 360) / segmentAngle,
       );
       if (index < 0) {
         index += segments.length;
@@ -61,6 +59,7 @@ const useAnimation = (
   };
 
   const startIndefiniteSpin = () => {
+    console.log("Start the indefinite spin");
     setState((prevState) => ({
       ...prevState,
       spinning: true,
@@ -69,7 +68,7 @@ const useAnimation = (
     const animate = () => {
       setState((prevState) => ({
         ...prevState,
-        angle: prevState.angle + 10,
+        angle: prevState.angle + 4,
       }));
 
       timeoutRef.current = window.setTimeout(animate, 16); // Equivalent to ~60 FPS
@@ -79,6 +78,7 @@ const useAnimation = (
   };
 
   const stopIndefiniteSpin = () => {
+    console.log("Stop the indefinite spin");
     setState((prevState) => ({
       ...prevState,
       spinning: false,
