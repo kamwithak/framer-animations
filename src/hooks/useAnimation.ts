@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface AnimationState {
   spinning: boolean;
@@ -9,12 +9,19 @@ interface AnimationState {
 const useAnimation = (
   segments: string[],
   duration: number = 7000,
-): [AnimationState, () => void] => {
+): [
+  AnimationState,
+  () => void,
+  () => void,
+  () => void,
+  React.RefObject<HTMLDivElement>
+] => {
   const [state, setState] = useState<AnimationState>({
     spinning: false,
     angle: 0,
     result: null,
   });
+  const scope = useRef<HTMLDivElement>(null);
 
   const spin = () => {
     setState((prevState) => ({
@@ -47,7 +54,33 @@ const useAnimation = (
     }, duration);
   };
 
-  return [state, spin];
+  const startSpin = () => {
+    setState((prevState) => ({
+      ...prevState,
+      spinning: true,
+    }));
+
+    const indefiniteSpin = () => {
+      if (state.spinning) {
+        setState((prevState) => ({
+          ...prevState,
+          angle: prevState.angle + 360,
+        }));
+        requestAnimationFrame(indefiniteSpin);
+      }
+    };
+
+    requestAnimationFrame(indefiniteSpin);
+  };
+
+  const stopSpin = () => {
+    setState((prevState) => ({
+      ...prevState,
+      spinning: false,
+    }));
+  };
+
+  return [state, spin, startSpin, stopSpin, scope];
 };
 
 export default useAnimation;
