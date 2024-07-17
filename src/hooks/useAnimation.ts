@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 interface AnimationState {
   spinning: boolean;
   angle: number;
-  result: string | null; // NULL means no result yet
+  result: string | null;
 }
 
 interface UseAnimation {
@@ -98,7 +98,12 @@ const useAnimation = (
     };
   }, []);
 
-  return { state, resultSpin, startIndefiniteSpin, stopIndefiniteSpin };
+  return {
+    state,
+    resultSpin,
+    startIndefiniteSpin,
+    stopIndefiniteSpin
+  };
 };
 
 export default useAnimation;
