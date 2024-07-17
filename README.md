@@ -1,7 +1,7 @@
-Radial spinner feature implementation - shows the result for every spin
+Radial spinner feature implementation
 
-<img width="633" alt="Screenshot 2024-07-16 at 11 25 53 AM" src="https://github.com/user-attachments/assets/3b9b1e63-bbb8-4829-865d-77e7eb69bca9">
+https://github.com/user-attachments/assets/86103a51-b1b4-43b7-b275-db1d58b6bdfd
 
 ---
 
-Explorative work using `typescript`, `react` and `framer-motion`
+Explorative work using `typescript`, `react`, `framer-motion`, `viem`, `wagmi`
