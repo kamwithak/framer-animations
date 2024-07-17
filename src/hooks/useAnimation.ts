@@ -1,17 +1,16 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface AnimationState {
   spinning: boolean;
   angle: number;
-  result: string | null;
+  result: string | null;  // NULL means no result yet
 }
 
 interface UseAnimation {
-  state: AnimationState;
-  resultSpin: () => void;
-  startIndefiniteSpin: () => void;
-  stopIndefiniteSpin: () => void;
-  scope: React.RefObject<HTMLDivElement>;
+  state: AnimationState;  // Current state of the animation
+  resultSpin: () => void; // Spin the wheel to show the result
+  startIndefiniteSpin: () => void;  // Start spinning indefinitely
+  stopIndefiniteSpin: () => void;   // Stop spinning indefinitely
 }
 
 const useAnimation = (
@@ -23,7 +22,8 @@ const useAnimation = (
     angle: 0,
     result: null,
   });
-  const scope = useRef<HTMLDivElement>(null);
+
+  const timeoutRef = useRef<number | null>(null);
 
   const resultSpin = () => {
     setState((prevState) => ({
@@ -31,19 +31,22 @@ const useAnimation = (
       spinning: true,
     }));
 
-    const newAngle = state.angle + Math.floor(Math.random() * 360) + 360 * 7; // Spin at least 5 full rotations from current angle
+    const newAngle =
+      state.angle +
+      Math.floor(Math.random() * 360) +
+      360 * 7; // Spin at least 7 full rotations from current angle
     setState((prevState) => ({
       ...prevState,
       angle: newAngle,
     }));
 
-    setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       const finalAngle = newAngle % 360;
-      const pointerAngle = 270; // Angle of the pointer at the top center of the circle (assuming 0 degrees is at the 3 o'clock position)
+      const pointerAngle = 290; // Angle of the pointer at the top center of the circle (assuming 0 degrees is at the 2 o'clock position)
       const segmentAngle = 360 / segments.length;
       // Calculate the segment index based on the angle difference from the pointer
       let index = Math.floor(
-        ((360 - (finalAngle - pointerAngle)) % 360) / segmentAngle,
+        ((360 - (finalAngle - pointerAngle)) % 360) / segmentAngle
       );
       if (index < 0) {
         index += segments.length;
@@ -62,23 +65,16 @@ const useAnimation = (
       spinning: true,
     }));
 
-    let lastFrameTime = performance.now();
-
     const animate = () => {
-      const currentTime = performance.now();
-      const deltaTime = currentTime - lastFrameTime;
-      lastFrameTime = currentTime;
+      setState((prevState) => ({
+        ...prevState,
+        angle: prevState.angle + 10,
+      }));
 
-      if (state.spinning) {
-        setState((prevState) => ({
-          ...prevState,
-          angle: prevState.angle + (360 * deltaTime) / 1000, // Rotate by 360 degrees per second
-        }));
-        requestAnimationFrame(animate);
-      }
+      timeoutRef.current = window.setTimeout(animate, 16); // Equivalent to ~60 FPS
     };
 
-    requestAnimationFrame(animate);
+    animate();
   };
 
   const stopIndefiniteSpin = () => {
@@ -86,9 +82,21 @@ const useAnimation = (
       ...prevState,
       spinning: false,
     }));
+
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
   };
 
-  return { state, resultSpin, startIndefiniteSpin, stopIndefiniteSpin, scope };
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return { state, resultSpin, startIndefiniteSpin, stopIndefiniteSpin };
 };
 
 export default useAnimation;
