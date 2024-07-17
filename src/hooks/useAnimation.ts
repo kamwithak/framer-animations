@@ -6,25 +6,32 @@ interface AnimationState {
   result: string | null;
 }
 
+interface UseAnimation {
+  state: AnimationState;
+  resultSpin: () => void;
+  startIndefiniteSpin: () => void;
+  stopIndefiniteSpin: () => void;
+  scope: React.RefObject<HTMLDivElement>;
+}
+
 const useAnimation = (
   segments: string[],
   duration: number = 7000,
-): [AnimationState, () => void, () => void, () => void] => {
+): UseAnimation => {
   const [state, setState] = useState<AnimationState>({
     spinning: false,
     angle: 0,
     result: null,
   });
+  const scope = useRef<HTMLDivElement>(null);
 
-  const spinInterval = useRef<NodeJS.Timeout | null>(null);
-
-  const spin = () => {
+  const resultSpin = () => {
     setState((prevState) => ({
       ...prevState,
       spinning: true,
     }));
 
-    const newAngle = state.angle + Math.floor(Math.random() * 360) + 360 * 7; // Spin at least 7 full rotations from current angle
+    const newAngle = state.angle + Math.floor(Math.random() * 360) + 360 * 7; // Spin at least 5 full rotations from current angle
     setState((prevState) => ({
       ...prevState,
       angle: newAngle,
@@ -50,34 +57,38 @@ const useAnimation = (
   };
 
   const startIndefiniteSpin = () => {
-    if (spinInterval.current) {
-      clearInterval(spinInterval.current);
-    }
     setState((prevState) => ({
       ...prevState,
       spinning: true,
     }));
-    spinInterval.current = setInterval(() => {
-			const newAngle = state.angle + Math.floor(Math.random() * 360) + 360 * 7;
-      setState((prevState) => ({
-        ...prevState,
-        angle: newAngle,
-      }));
-    }, duration);
+
+    let lastFrameTime = performance.now();
+
+    const animate = () => {
+      const currentTime = performance.now();
+      const deltaTime = currentTime - lastFrameTime;
+      lastFrameTime = currentTime;
+
+      if (state.spinning) {
+        setState((prevState) => ({
+          ...prevState,
+          angle: prevState.angle + (360 * deltaTime) / 1000, // Rotate by 360 degrees per second
+        }));
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
   };
 
   const stopIndefiniteSpin = () => {
-    if (spinInterval.current) {
-      clearInterval(spinInterval.current);
-      spinInterval.current = null;
-    }
     setState((prevState) => ({
       ...prevState,
       spinning: false,
     }));
   };
 
-  return [state, spin, startIndefiniteSpin, stopIndefiniteSpin];
+  return { state, resultSpin, startIndefiniteSpin, stopIndefiniteSpin, scope };
 };
 
 export default useAnimation;
