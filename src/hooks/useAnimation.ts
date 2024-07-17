@@ -34,7 +34,8 @@ const useAnimation = (
     const newAngle =
       state.angle +
       Math.floor(Math.random() * 360) +
-      360 * 7; // Spin at least 7 full rotations from current angle
+      360 * 4; // Spin at least 4 full rotations from current angle
+
     setState((prevState) => ({
       ...prevState,
       angle: newAngle,
