@@ -85,6 +85,7 @@ const useAnimation = (
 
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
   };
 
