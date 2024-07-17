@@ -10,21 +10,22 @@ import "./SpinnerApp.css";
 const segments = ["🍒", "🍋", "🍊", "🍉", "🍇", "🍍", "🍓", "🍌"];
 
 const SpinnerApp: React.FC = () => {
-  const { state, resultSpin, startIndefiniteSpin, stopIndefiniteSpin, scope }= useAnimation(segments);
+  const { state, resultSpin, startIndefiniteSpin, stopIndefiniteSpin }= useAnimation(segments);
   const { isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { sendTransaction, isPending, isSuccess, isError } = useSendTransaction();
 
   useEffect(() => {
     if (isPending) {
-      console.log('START SPIN')
-      startIndefiniteSpin(); // NOTE: something is wrong with startIndefiniteSpin, hence why this doesn't work
+      console.log('Start the indefinite spin')
+      startIndefiniteSpin();
     } else if (isSuccess) {
+      console.log('Stop the indefinite spin')
       stopIndefiniteSpin();
-      console.log('RESULT SPIN')
-      resultSpin(); // Spin to show the result after stopping the indefinite spin
+      console.log('Start the result spin')
+      resultSpin();
     } else if (isError) { // If tx rejected, stop the spin
-      console.log('STOP SPIN')
+      console.log('Stop the indefinite spin')
       stopIndefiniteSpin();
     }
   }, [isPending]);
@@ -45,7 +46,6 @@ const SpinnerApp: React.FC = () => {
       <div className="wheel-container">
         <motion.div
           className="wheel"
-          ref={scope} // Ensure the scope reference is correctly applied here
           animate={{ rotate: state.angle }}
           transition={{ duration: 7, ease: "easeOut" }}
         >
@@ -66,11 +66,11 @@ const SpinnerApp: React.FC = () => {
       <br />
       <br />
       <button onClick={resultSpin} disabled={state.spinning}>
-        {state.spinning ? "Spinning..." : "Spin"}
+        {state.spinning ? "Spinning..." : "Free Spin"}
       </button>
       <br />
-      <button onClick={handleSendTransaction}>
-        {isConnected ? 'Send Tx' : 'Connect'}
+      <button onClick={handleSendTransaction} disabled={state.spinning}>
+        {isConnected ? 'Paid Spin' : 'Connect'}
       </button>
       <br />
       {state.result && (
