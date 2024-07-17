@@ -23,7 +23,7 @@ const useAnimation = (
     result: null,
   });
 
-  const timeoutRef = useRef<number | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resultSpin = () => {
     console.log("Start the result spin");
@@ -39,7 +39,7 @@ const useAnimation = (
       angle: newAngle,
     }));
 
-    timeoutRef.current = window.setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       const finalAngle = newAngle % 360;
       const pointerAngle = 290; // Angle of the pointer at the top center of the circle (assuming 0 degrees is at the 2 o'clock position)
       const segmentAngle = 360 / segments.length;
@@ -71,7 +71,7 @@ const useAnimation = (
         angle: prevState.angle + 4,
       }));
 
-      timeoutRef.current = window.setTimeout(animate, 16); // Equivalent to ~60 FPS
+      timeoutRef.current = setTimeout(animate, 16); // Equivalent to ~60 FPS
     };
 
     animate();
@@ -85,7 +85,7 @@ const useAnimation = (
     }));
 
     if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
+      clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
   };
@@ -93,7 +93,7 @@ const useAnimation = (
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
+        clearTimeout(timeoutRef.current);
       }
     };
   }, []);
