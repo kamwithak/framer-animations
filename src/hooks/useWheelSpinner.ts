@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { animate, Easing } from 'framer-motion';
 
-interface WheelSpinnerState {
+interface SpinnerState {
   spinning: boolean;
   angle: number;
   result: string | null;
 }
 
 interface UseWheelSpinner {
-  state: WheelSpinnerState; // Current state of the animation
+  state: SpinnerState; // Current state of the animation
   resultSpin: (ease: Easing) => void; // Spin the wheel to show the result
   startIndefiniteSpin: () => void; // Start spinning the wheel
   stopIndefiniteSpin: () => void; // Stop spinning the wheel
@@ -20,7 +20,7 @@ const useWheelSpinner = (
   segments: string[],
   duration: number = 7000,
 ): UseWheelSpinner => {
-  const [state, setState] = useState<WheelSpinnerState>({
+  const [state, setState] = useState<SpinnerState>({
     spinning: false,
     angle: 0,
     result: null,
